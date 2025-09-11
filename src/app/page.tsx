@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings } from "lucide-react";
+import { Plus, Settings, LogOut } from "lucide-react";
 import { SettingSelectForm } from "@/components/setting-select-form";
 
 export interface Todo {
@@ -263,6 +263,11 @@ export default function TodoApp() {
     }
   };
 
+  const handleLogout = async () => {
+    await axios.post("/api/auth/logout");
+    window.location.href = "/login";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -271,9 +276,14 @@ export default function TodoApp() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Inventory Todo Manager
             </h1>
-            <Button variant="ghost" size="icon" onClick={openSettings} title="Settings">
-              <Settings className="w-6 h-6" />
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="icon" onClick={openSettings} title="Settings">
+                <Settings className="w-6 h-6" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
+                <LogOut className="w-6 h-6" />
+              </Button>
+            </div>
           </div>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             Organize and track your inventory tasks efficiently
