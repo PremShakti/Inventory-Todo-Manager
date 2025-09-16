@@ -36,6 +36,7 @@ export default function TodoApp() {
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [settings, setSettings] = useState<{ inventoryTypes: string[]; locations: string[]; descriptions: string[] } | null>(null);
@@ -43,7 +44,7 @@ export default function TodoApp() {
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsError, setSettingsError] = useState<string | null>(null);
 
-  // Fetch todos and settings on mount
+  // Fetch todos, settings, and user email on mount
   useEffect(() => {
     const fetchTodos = async () => {
       setLoading(true);
@@ -58,8 +59,17 @@ export default function TodoApp() {
         setLoading(false);
       }
     };
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("/api/auth/me");
+        setUserEmail(res.data?.email || null);
+      } catch {
+        setUserEmail(null);
+      }
+    };
     fetchTodos();
     fetchSettings();
+    fetchUser();
   }, []);
 
   // Fetch settings
@@ -271,12 +281,17 @@ export default function TodoApp() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className=" space-y-2">
+        <div className=" space-y-2 border-b pb-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className=" text-base md:text-2xl font-bold text-gray-900 dark:text-white">
               Inventory Todo Manager
             </h1>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              {userEmail && (
+                <span className="text-sm text-gray-700 dark:text-gray-300 mr-2" title={userEmail}>
+                  {userEmail}
+                </span>
+              )}
               <Button variant="ghost" size="icon" onClick={openSettings} title="Settings">
                 <Settings className="w-6 h-6" />
               </Button>
@@ -285,7 +300,7 @@ export default function TodoApp() {
               </Button>
             </div>
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className=" text-sm md:text-lg text-gray-600 dark:text-gray-300">
             Organize and track your inventory tasks efficiently
           </p>
         </div>

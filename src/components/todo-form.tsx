@@ -1,56 +1,93 @@
-"use client"
+"use client";
 
-import type React from "react"
-import type { Todo } from "@/app/page"
+import type React from "react";
+import type { Todo } from "@/app/page";
 
-import { useEffect } from "react"
-import { useForm, Controller } from "react-hook-form"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { Plus, Save, X } from "lucide-react"
+import { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Plus, Save, X } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface TodoFormProps {
-  onSubmit: (data: Todo | Omit<Todo, "id" | "completed" | "createdAt">) => void
-  editingTodo?: Todo | null
-  onCancel?: () => void
-  inventoryTypes: string[]
-  locations: string[]
-  descriptions: string[]
+  onSubmit: (data: Todo | Omit<Todo, "id" | "completed" | "createdAt">) => void;
+  editingTodo?: Todo | null;
+  onCancel?: () => void;
+  inventoryTypes: string[];
+  locations: string[];
+  descriptions: string[];
 }
 
 const addTodoSchema = z.object({
   inventoryType: z.string().min(1, "Inventory type is required"),
-  modalName: z.string().min(1, "Modal name is required").max(55, "Modal name must be at most 55 characters"),
+  modalName: z
+    .string()
+    .min(1, "Modal name is required")
+    .max(55, "Modal name must be at most 55 characters"),
   location: z.string().min(1, "Location is required"),
-  subLocation: z.string().min(1, "Sub location is required").max(55, "Sub location must be at most 55 characters"),
+  subLocation: z
+    .string()
+    .min(1, "Sub location is required")
+    .max(55, "Sub location must be at most 55 characters"),
   description: z.string().min(1, "Description is required"),
   customDescription: z.string().optional(),
 });
 
 const editTodoSchema = z.object({
   inventoryType: z.string().optional(),
-  modalName: z.string().max(55, "Modal name must be at most 55 characters").optional(),
+  modalName: z
+    .string()
+    .max(55, "Modal name must be at most 55 characters")
+    .optional(),
   location: z.string().optional(),
-  subLocation: z.string().max(55, "Sub location must be at most 55 characters").optional(),
+  subLocation: z
+    .string()
+    .max(55, "Sub location must be at most 55 characters")
+    .optional(),
   description: z.string().optional(),
   customDescription: z.string().optional(),
 });
 
-export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, locations, descriptions }: TodoFormProps) {
+export function TodoForm({
+  onSubmit,
+  editingTodo,
+  onCancel,
+  inventoryTypes,
+  locations,
+  descriptions,
+}: TodoFormProps) {
   const schema = editingTodo ? editTodoSchema : addTodoSchema;
-  const { register, handleSubmit, control, setValue, watch, reset, formState: { errors, isSubmitting } } = useForm({
-    resolver: zodResolver(schema.refine(
-      (data) => data.description !== "Other" || (data.customDescription && data.customDescription.length > 0),
-      {
-        message: "Custom description is required when 'Other' is selected",
-        path: ["customDescription"],
-      }
-    )),
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(
+      schema.refine(
+        (data) =>
+          data.description !== "Other" ||
+          (data.customDescription && data.customDescription.length > 0),
+        {
+          message: "Custom description is required when 'Other' is selected",
+          path: ["customDescription"],
+        }
+      )
+    ),
     defaultValues: {
       inventoryType: "",
       modalName: "",
@@ -71,7 +108,9 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
         modalName: editingTodo.modalName,
         location: editingTodo.location,
         subLocation: editingTodo.subLocation,
-        description: editingTodo.customDescription ? "Other" : editingTodo.description,
+        description: editingTodo.customDescription
+          ? "Other"
+          : editingTodo.description,
         customDescription: editingTodo.customDescription || "",
       });
     } else {
@@ -80,7 +119,8 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
   }, [editingTodo, inventoryTypes, locations, descriptions, reset]);
 
   const onFormSubmit = (data: any) => {
-    const finalDescription = data.description === "Other" ? data.customDescription : data.description;
+    const finalDescription =
+      data.description === "Other" ? data.customDescription : data.description;
     if (editingTodo) {
       onSubmit({
         ...editingTodo,
@@ -89,13 +129,15 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
         location: data.location,
         subLocation: data.subLocation,
         description: finalDescription,
-        customDescription: data.description === "Other" ? data.customDescription : undefined,
+        customDescription:
+          data.description === "Other" ? data.customDescription : undefined,
       });
     } else {
       onSubmit({
         ...data,
         description: finalDescription,
-        customDescription: data.description === "Other" ? data.customDescription : undefined,
+        customDescription:
+          data.description === "Other" ? data.customDescription : undefined,
       });
       reset();
     }
@@ -127,7 +169,11 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
               </Select>
             )}
           />
-          {errors.inventoryType && <p className="text-red-500 text-xs">{errors.inventoryType.message as string}</p>}
+          {errors.inventoryType && (
+            <p className="text-red-500 text-xs">
+              {errors.inventoryType.message as string}
+            </p>
+          )}
         </div>
         {/* Modal Name */}
         <div className="space-y-2">
@@ -140,7 +186,11 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
             maxLength={55}
             {...register("modalName")}
           />
-          {errors.modalName && <p className="text-red-500 text-xs">{errors.modalName.message as string}</p>}
+          {errors.modalName && (
+            <p className="text-red-500 text-xs">
+              {errors.modalName.message as string}
+            </p>
+          )}
         </div>
         {/* Location */}
         <div className="space-y-2">
@@ -165,7 +215,11 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
               </Select>
             )}
           />
-          {errors.location && <p className="text-red-500 text-xs">{errors.location.message as string}</p>}
+          {errors.location && (
+            <p className="text-red-500 text-xs">
+              {errors.location.message as string}
+            </p>
+          )}
         </div>
         {/* Sub Location */}
         <div className="space-y-2">
@@ -178,7 +232,11 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
             maxLength={55}
             {...register("subLocation")}
           />
-          {errors.subLocation && <p className="text-red-500 text-xs">{errors.subLocation.message as string}</p>}
+          {errors.subLocation && (
+            <p className="text-red-500 text-xs">
+              {errors.subLocation.message as string}
+            </p>
+          )}
         </div>
       </div>
       {/* Description */}
@@ -200,11 +258,16 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
                     {desc}
                   </SelectItem>
                 ))}
+                <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
           )}
         />
-        {errors.description && <p className="text-red-500 text-xs">{errors.description.message as string}</p>}
+        {errors.description && (
+          <p className="text-red-500 text-xs">
+            {errors.description.message as string}
+          </p>
+        )}
       </div>
       {/* Custom Description (conditional) */}
       {showCustomDescription && (
@@ -218,11 +281,19 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
             className="min-h-[100px] resize-none"
             {...register("customDescription")}
           />
-          {errors.customDescription && <p className="text-red-500 text-xs">{errors.customDescription.message as string}</p>}
+          {errors.customDescription && (
+            <p className="text-red-500 text-xs">
+              {errors.customDescription.message as string}
+            </p>
+          )}
         </div>
       )}
       <div className="flex gap-3">
-        <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+          disabled={isSubmitting}
+        >
           {editingTodo ? (
             <>
               <Save className="w-4 h-4 mr-2" />
@@ -236,7 +307,12 @@ export function TodoForm({ onSubmit, editingTodo, onCancel, inventoryTypes, loca
           )}
         </Button>
         {editingTodo && onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} className="px-6 bg-transparent">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="px-6 bg-transparent"
+          >
             <X className="w-4 h-4 mr-2" />
             Cancel
           </Button>
