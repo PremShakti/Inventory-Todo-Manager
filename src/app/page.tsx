@@ -15,10 +15,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings, LogOut, Search } from "lucide-react";
+import { Plus, Settings, LogOut, Search, FunnelX, CircleX } from "lucide-react";
 import { SettingSelectForm } from "@/components/setting-select-form";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
@@ -62,7 +66,8 @@ export default function TodoApp() {
 
   // Sync dateRange with createdAtStart/End
   useEffect(() => {
-    if (dateRange?.from) setCreatedAtStart(format(dateRange.from, "yyyy-MM-dd"));
+    if (dateRange?.from)
+      setCreatedAtStart(format(dateRange.from, "yyyy-MM-dd"));
     else setCreatedAtStart("");
     if (dateRange?.to) setCreatedAtEnd(format(dateRange.to, "yyyy-MM-dd"));
     else setCreatedAtEnd("");
@@ -331,7 +336,7 @@ export default function TodoApp() {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4  ">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className=" space-y-2 border-b pb-4">
           <div className="flex justify-between items-center">
@@ -352,6 +357,7 @@ export default function TodoApp() {
                 size="icon"
                 onClick={openSettings}
                 title="Settings"
+                className="hidden md:inline-flex"
               >
                 <Settings className="w-6 h-6" />
               </Button>
@@ -373,12 +379,12 @@ export default function TodoApp() {
         <div className="flex justify-center gap-2 mb-4">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="gap-2">
+              <Button size="lg" className="gap-2 hidden md:inline-flex">
                 <Plus className="h-5 w-5" />
                 {editingTodo ? "Edit Task" : "Add New Task"}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="w-[95vw] max-w-2xl  max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {editingTodo ? "Edit Todo" : "Create New Todo"}
@@ -406,7 +412,7 @@ export default function TodoApp() {
           <Button
             size="lg"
             variant={showSearch ? "default" : "outline"}
-            className="gap-2"
+            className="gap-2 hidden md:flex"
             onClick={() => setShowSearch((v) => !v)}
             title="Show Search & Filter"
           >
@@ -414,15 +420,42 @@ export default function TodoApp() {
             {showSearch ? "Hide Search" : "Show Search"}
           </Button>
         </div>
+        <div className="gap-2 py-2 px-2 absolute bottom-0 left-1/2 transform -translate-x-1/2 md:hidden grid grid-cols-3 bg-white w-[95vw] rounded-md overflow-hidden">
+          <Button size="icon" variant={"outline"} className=" w-full " onClick={()=>{
+            setIsDialogOpen(true);
+            setEditingTodo(null);
+          }}>
+            <Plus className="h-5 w-5" />
+            {/* {editingTodo ? "Edit Task" : "Add New Task"} */}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={openSettings}
+            title="Settings"
+            className=" w-full "
+          >
+            <Settings className="w-6 h-6" />
+          </Button>
+          <Button
+            size="icon"
+            variant={"outline"}
+            className=" w-full"
+            onClick={() => setShowSearch((v) => !v)}
+            title="Show Search & Filter"
+          >
+            {showSearch ? <CircleX /> : <Search className="h-5 w-5" />}
+          </Button>
+        </div>
 
         {/* Search and filter bar (toggle visibility) */}
         {showSearch && (
-          <div className="flex flex-col md:flex-row gap-2 md:gap-4 items-center justify-between mb-4">
+          <div className=" hidden md:flex flex-col md:flex-row gap-2 md:gap-4 items-center justify-between mb-4">
             <Input
               type="text"
               placeholder="Search by Modal Name"
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full md:w-1/2"
             />
             <Popover>
@@ -433,7 +466,10 @@ export default function TodoApp() {
                 >
                   {dateRange?.from
                     ? dateRange.to
-                      ? `${format(dateRange.from, "MMM dd, yyyy")} - ${format(dateRange.to, "MMM dd, yyyy")}`
+                      ? `${format(dateRange.from, "MMM dd, yyyy")} - ${format(
+                          dateRange.to,
+                          "MMM dd, yyyy"
+                        )}`
                       : format(dateRange.from, "MMM dd, yyyy")
                     : "Pick a date range"}
                 </Button>
@@ -455,6 +491,61 @@ export default function TodoApp() {
               }}
             >
               Clear
+            </Button>
+          </div>
+        )}
+
+        {showSearch && (
+          <div className=" absolute left-1/2 transform -translate-x-1/2  w-[95vw] bottom-0 bg-white  rounded-lg py-2.5 px-2.5 grid grid-cols-5 gap-2 md:gap-4 items-center justify-between mb-4">
+            <Input
+              type="text"
+              placeholder="Search by Modal Name"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full col-span-4"
+            />
+            <Button
+              size="lg"
+              variant={"outline"}
+              className=" col-span-1 gap-2  md:hidden"
+              onClick={() => setShowSearch((v) => !v)}
+              title="Show Search & Filter"
+            >
+              {showSearch ? <CircleX /> : <Search className="h-5 w-5" />}
+            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full col-span-4 md:w-[260px] justify-start text-left font-normal"
+                >
+                  {dateRange?.from
+                    ? dateRange.to
+                      ? `${format(dateRange.from, "MMM dd, yyyy")} - ${format(
+                          dateRange.to,
+                          "MMM dd, yyyy"
+                        )}`
+                      : format(dateRange.from, "MMM dd, yyyy")
+                    : "Pick a date range"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearch("");
+                setDateRange(undefined);
+              }}
+            >
+              <FunnelX />
             </Button>
           </div>
         )}
@@ -583,4 +674,3 @@ export default function TodoApp() {
     </div>
   );
 }
-
