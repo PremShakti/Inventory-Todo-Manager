@@ -496,7 +496,7 @@ export default function TodoApp() {
         )}
 
         {showSearch && (
-          <div className=" absolute left-1/2 transform -translate-x-1/2  w-[95vw] bottom-0 bg-white  rounded-lg py-2.5 px-2.5 grid grid-cols-5 gap-2 md:gap-4 items-center justify-between mb-4">
+          <div className=" md:hidden absolute left-1/2 transform -translate-x-1/2  w-[95vw] bottom-0 bg-white  rounded-lg py-2.5 px-2.5 grid grid-cols-5 gap-2 md:gap-4 items-center justify-between mb-4">
             <Input
               type="text"
               placeholder="Search by Modal Name"
