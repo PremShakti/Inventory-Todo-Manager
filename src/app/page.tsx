@@ -336,8 +336,8 @@ export default function TodoApp() {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4  ">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen pb-[150px] bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4  ">
+      <div className="max-w-4xl mx-auto md:space-y-6">
         <div className=" space-y-2 border-b pb-4">
           <div className="flex justify-between items-center">
             <h1 className=" text-base md:text-2xl font-bold text-gray-900 dark:text-white">
@@ -420,8 +420,8 @@ export default function TodoApp() {
             {showSearch ? "Hide Search" : "Show Search"}
           </Button>
         </div>
-        <div className="gap-2 py-2 px-2 absolute bottom-0 left-1/2 transform -translate-x-1/2 md:hidden grid grid-cols-3 bg-white w-[95vw] rounded-md overflow-hidden">
-          <Button size="icon" variant={"outline"} className=" w-full " onClick={()=>{
+        <div className="gap-2 py-2 px-2 fixed z-20 bottom-1 left-1/2 transform -translate-x-1/2 md:hidden grid grid-cols-3 w-[95vw] rounded-md overflow-hidden backdrop-blur-[4px] bg-white/30">
+          <Button size="icon" variant={"outline"} className=" w-full bg-transparent" onClick={()=>{
             setIsDialogOpen(true);
             setEditingTodo(null);
           }}>
@@ -433,14 +433,14 @@ export default function TodoApp() {
             size="icon"
             onClick={openSettings}
             title="Settings"
-            className=" w-full "
+            className=" w-full bg-transparent "
           >
             <Settings className="w-6 h-6" />
           </Button>
           <Button
             size="icon"
             variant={"outline"}
-            className=" w-full"
+            className=" w-full bg-transparent"
             onClick={() => setShowSearch((v) => !v)}
             title="Show Search & Filter"
           >
@@ -496,7 +496,7 @@ export default function TodoApp() {
         )}
 
         {showSearch && (
-          <div className=" md:hidden absolute left-1/2 transform -translate-x-1/2  w-[95vw] bottom-0 bg-white  rounded-lg py-2.5 px-2.5 grid grid-cols-5 gap-2 md:gap-4 items-center justify-between mb-4">
+          <div className=" md:hidden fixed z-40 left-1/2 transform -translate-x-1/2  w-[95vw] bottom-1 bg-white  rounded-lg py-2.5 px-2.5 grid grid-cols-5 gap-2 md:gap-4 items-center justify-between ">
             <Input
               type="text"
               placeholder="Search by Modal Name"
