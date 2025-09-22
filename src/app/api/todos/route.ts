@@ -19,9 +19,37 @@ function getUserEmailFromRequest(req: NextRequest): string | null {
 export async function GET(req: NextRequest) {
   const email = getUserEmailFromRequest(req);
   if (!email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const client = await clientPromise;
   const db = client.db();
-  const todos = await db.collection("todos").find({ email }).sort({ createdAt: -1 }).toArray();
+
+  // --- Filtering logic ---
+  const { searchParams } = new URL(req.url);
+  const modalName = searchParams.get("modalName");
+  // Change to support date range
+  const createdAtStart = searchParams.get("createdAtStart");
+  const createdAtEnd = searchParams.get("createdAtEnd");
+
+  const query: any = { email };
+
+  if (modalName) {
+    query.modalName = { $regex: modalName, $options: "i" };
+  }
+
+  if (createdAtStart || createdAtEnd) {
+    query.createdAt = {};
+    if (createdAtStart) {
+      query.createdAt.$gte = new Date(createdAtStart);
+    }
+    if (createdAtEnd) {
+      // Add 1 day to include the end date fully
+      const end = new Date(createdAtEnd);
+      end.setDate(end.getDate() + 1);
+      query.createdAt.$lt = end;
+    }
+  }
+
+  const todos = await db.collection("todos").find(query).sort({ createdAt: -1 }).toArray();
   return NextResponse.json(todos);
 }
 
