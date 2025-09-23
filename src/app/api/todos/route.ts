@@ -56,30 +56,79 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const email = getUserEmailFromRequest(req);
   if (!email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const body = await req.json();
+  
+  // Validate image size if present (optional)
+  if (body.image) {
+    const imageSizeKB = (body.image.length * 0.75) / 1024;
+    if (imageSizeKB > 1024) {
+      return NextResponse.json(
+        { error: "Image size must be less than 1MB" },
+        { status: 400 }
+      );
+    }
+    
+    // Validate base64 format
+    if (!body.image.startsWith('data:image/')) {
+      return NextResponse.json(
+        { error: "Invalid image format. Must be base64 encoded image." },
+        { status: 400 }
+      );
+    }
+  }
+
   const client = await clientPromise;
   const db = client.db();
-  const { createdAt, ...rest } = body;
-  const newTodo = {
-    ...rest,
+  
+  const todoData: any = {
+    ...body,
     email,
     completed: false,
     createdAt: new Date(),
+    date: new Date().toISOString().split("T")[0],
   };
-  await db.collection("todos").insertOne(newTodo);
-  return NextResponse.json({ success: true });
+  
+  // Only add image field if it exists
+  if (body.image) {
+    todoData.image = body.image;
+  }
+
+  const result = await db.collection("todos").insertOne(todoData);
+  return NextResponse.json({ success: true, id: result.insertedId });
 }
 
 export async function PUT(req: NextRequest) {
   const email = getUserEmailFromRequest(req);
   if (!email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const body = await req.json();
+  const { id, ...updateData } = body;
+  
+  // Validate image size if present (optional)
+  if (updateData.image !== undefined && updateData.image) {
+    const imageSizeKB = (updateData.image.length * 0.75) / 1024;
+    if (imageSizeKB > 1024) {
+      return NextResponse.json(
+        { error: "Image size must be less than 1MB" },
+        { status: 400 }
+      );
+    }
+    
+    // Validate base64 format
+    if (!updateData.image.startsWith('data:image/')) {
+      return NextResponse.json(
+        { error: "Invalid image format. Must be base64 encoded image." },
+        { status: 400 }
+      );
+    }
+  }
+
   const client = await clientPromise;
   const db = client.db();
-  const { id, ...updateFields } = body;
   await db.collection("todos").updateOne(
     { _id: new ObjectId(id), email },
-    { $set: updateFields }
+    { $set: updateData }
   );
   return NextResponse.json({ success: true });
 }

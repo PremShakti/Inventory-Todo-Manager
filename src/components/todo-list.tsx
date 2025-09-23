@@ -1,22 +1,39 @@
-"use client"
+"use client";
 
-import type { Todo } from "@/app/page"
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Trash2, Calendar, MapPin, Package, FileText, Edit, Check, CheckCheck } from "lucide-react"
-import { format } from "date-fns"
+import type { Todo } from "@/app/page";
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Trash2,
+  Calendar,
+  MapPin,
+  Package,
+  FileText,
+  Edit,
+  Check,
+  CheckCheck,
+} from "lucide-react";
+import { format } from "date-fns";
+import Image from "next/image";
+import { ImageDialog } from "./ImageDialog";
 
 interface TodoListProps {
-  todos: Todo[]
-  onToggle: (id: string) => void
-  onDelete: (id: string) => void
-  onEdit: (todo: Todo) => void
-  onBulkComplete: (ids: string[]) => void
-  onBulkDelete: (ids: string[]) => void
-  showCompleted?: boolean
+  todos: Todo[];
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+  onEdit: (todo: Todo) => void;
+  onBulkComplete: (ids: string[]) => void;
+  onBulkDelete: (ids: string[]) => void;
+  showCompleted?: boolean;
 }
 
 export function TodoList({
@@ -28,42 +45,42 @@ export function TodoList({
   onBulkDelete,
   showCompleted = false,
 }: TodoListProps) {
-  const [selectedTodos, setSelectedTodos] = useState<Set<string>>(new Set())
-  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [selectedTodos, setSelectedTodos] = useState<Set<string>>(new Set());
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleBulkSelect = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedTodos)
+    const newSelected = new Set(selectedTodos);
     if (checked) {
-      newSelected.add(id)
+      newSelected.add(id);
     } else {
-      newSelected.delete(id)
+      newSelected.delete(id);
     }
-    setSelectedTodos(newSelected)
-  }
+    setSelectedTodos(newSelected);
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedTodos(new Set(todos.map((todo) => todo.id)))
+      setSelectedTodos(new Set(todos.map((todo) => todo.id)));
     } else {
-      setSelectedTodos(new Set())
+      setSelectedTodos(new Set());
     }
-  }
+  };
 
   const handleBulkComplete = () => {
-    onBulkComplete(Array.from(selectedTodos))
-    setSelectedTodos(new Set())
-  }
+    onBulkComplete(Array.from(selectedTodos));
+    setSelectedTodos(new Set());
+  };
 
   const handleBulkDelete = () => {
-    onBulkDelete(Array.from(selectedTodos))
-    setSelectedTodos(new Set())
-  }
+    onBulkDelete(Array.from(selectedTodos));
+    setSelectedTodos(new Set());
+  };
 
   const handleDelete = async (id: string) => {
-    setDeletingId(id)
-    await onDelete(id)
-    setDeletingId(null)
-  }
+    setDeletingId(id);
+    await onDelete(id);
+    setDeletingId(null);
+  };
 
   if (todos.length === 0) {
     return (
@@ -74,14 +91,16 @@ export function TodoList({
             {showCompleted ? "No completed tasks yet" : "No pending tasks"}
           </CardTitle>
           <CardDescription>
-            {showCompleted ? "Complete some tasks to see them here" : "Create your first inventory task to get started"}
+            {showCompleted
+              ? "Complete some tasks to see them here"
+              : "Create your first inventory task to get started"}
           </CardDescription>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const hasSelected = selectedTodos.size > 0
+  const hasSelected = selectedTodos.size > 0;
 
   return (
     <div className="space-y-6">
@@ -90,9 +109,14 @@ export function TodoList({
           <CardContent className="  p-0">
             <div className=" flex  gap-2 flex-col sm:flex-row  p-0">
               <div className="flex items-center gap-2 md:gap-4  sm:mb-0">
-                <Checkbox checked={selectedTodos.size === todos.length} onCheckedChange={handleSelectAll} />
+                <Checkbox
+                  checked={selectedTodos.size === todos.length}
+                  onCheckedChange={handleSelectAll}
+                />
                 <span className="text-sm font-medium truncate">
-                  {selectedTodos.size > 0 ? `${selectedTodos.size} selected` : "Select all"}
+                  {selectedTodos.size > 0
+                    ? `${selectedTodos.size} selected`
+                    : "Select all"}
                 </span>
               </div>
               {hasSelected && (
@@ -151,7 +175,7 @@ export function TodoList({
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 function TodoCard({
@@ -164,19 +188,21 @@ function TodoCard({
   showCompleted = false,
   deleteDisabled = false,
 }: {
-  todo: Todo
-  onToggle: (id: string) => void
-  onDelete: () => void
-  onEdit: (todo: Todo) => void
-  isSelected: boolean
-  onBulkSelect: (id: string, checked: boolean) => void
-  showCompleted?: boolean
-  deleteDisabled?: boolean
+  todo: Todo;
+  onToggle: (id: string) => void;
+  onDelete: () => void;
+  onEdit: (todo: Todo) => void;
+  isSelected: boolean;
+  onBulkSelect: (id: string, checked: boolean) => void;
+  showCompleted?: boolean;
+  deleteDisabled?: boolean;
 }) {
   return (
     <Card
       className={`transition-all duration-200 hover:shadow-md ${
-        todo.completed ? "opacity-75 bg-gray-50 dark:bg-gray-800" : "bg-white dark:bg-gray-900"
+        todo.completed
+          ? "opacity-75 bg-gray-50 dark:bg-gray-800"
+          : "bg-white dark:bg-gray-900"
       } ${isSelected ? "ring-2 ring-blue-500" : ""}`}
     >
       <CardHeader className="pb-3">
@@ -190,7 +216,11 @@ function TodoCard({
             />
             <div className="space-y-1">
               <CardTitle
-                className={`text-lg ${todo.completed ? "line-through text-gray-500" : "text-gray-900 dark:text-white"}`}
+                className={`text-lg ${
+                  todo.completed
+                    ? "line-through text-gray-500"
+                    : "text-gray-900 dark:text-white"
+                }`}
               >
                 {todo.modalName}
               </CardTitle>
@@ -199,9 +229,12 @@ function TodoCard({
                   <Package className="w-3 h-3 mr-1" />
                   {todo.inventoryType}
                 </Badge>
-                
+
                 {todo.completed && (
-                  <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                  <Badge
+                    variant="default"
+                    className="text-xs bg-green-100 text-green-800"
+                  >
                     <Check className="w-3 h-3 mr-1" />
                     Completed
                   </Badge>
@@ -209,39 +242,63 @@ function TodoCard({
               </div>
             </div>
           </div>
-          <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onToggle(todo.id)}
-              className={
-                showCompleted
-                  ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-                  : "text-green-600 hover:text-green-700 hover:bg-green-50"
-              }
-              title={showCompleted ? "Mark as incomplete" : "Mark as completed"}
-            >
-              {showCompleted ? <Package className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(todo)}
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-              title="Edit todo"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDelete}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50"
-              title="Delete todo"
-              disabled={deleteDisabled}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+          <div>
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onToggle(todo.id)}
+                className={
+                  showCompleted
+                    ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                    : "text-green-600 hover:text-green-700 hover:bg-green-50"
+                }
+                title={
+                  showCompleted ? "Mark as incomplete" : "Mark as completed"
+                }
+              >
+                {showCompleted ? (
+                  <Package className="h-4 w-4" />
+                ) : (
+                  <Check className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(todo)}
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                title="Edit todo"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onDelete}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                title="Delete todo"
+                disabled={deleteDisabled}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {todo.image && (
+              <div className="flex justify-end">
+                <ImageDialog src={todo.image}>
+                  <div className="   max-h-[40px] max-w-[40px] md:max-w-[50px] md:max-h-[50px] overflow-hidden  ">
+                    <Image
+                      src={todo.image}
+                      alt="Todo attachment"
+                      className=" rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                      width={50}
+                      height={50}
+                    />
+                  </div>
+                </ImageDialog>
+              </div>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -259,9 +316,11 @@ function TodoCard({
             <span>{todo.description}</span>
           </div>
 
-          <div className="text-xs text-gray-400">Created {format(todo.createdAt, "MMM dd, yyyy 'at' h:mm a")}</div>
+          <div className="text-xs text-gray-400">
+            Created {format(todo.createdAt, "MMM dd, yyyy 'at' h:mm a")}
+          </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

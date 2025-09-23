@@ -38,6 +38,7 @@ export interface Todo {
   date: string;
   completed: boolean;
   createdAt: Date;
+  image?: string;
 }
 
 export default function TodoApp() {
