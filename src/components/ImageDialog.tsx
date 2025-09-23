@@ -14,10 +14,24 @@ import { Label } from "@/components/ui/label";
 import Image from "next/image";
 
 export function ImageDialog({ src, children }: { src: string; children: React.ReactNode }) {
+  const downloadImage = () => {
+    if (!src) return;
+
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = src;
+    link.download = `inventory-image-${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="h-auto p-0">{children}</Button>
+        <Button variant="ghost" className="h-auto p-0">
+          {children}
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[90vh] overflow-auto">
         <DialogHeader>
@@ -38,7 +52,9 @@ export function ImageDialog({ src, children }: { src: string; children: React.Re
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button>Download</Button>
+          <Button onClick={downloadImage} disabled={!src}>
+            Download
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
