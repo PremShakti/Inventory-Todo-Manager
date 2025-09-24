@@ -43,9 +43,9 @@ export function ImageDialog({ src, children }: { src: string; children: React.Re
           <a
             href={src}
             download={`inventory-image-${Date.now()}.jpg`}
-            className="inline-flex"
+            className=" w-full "
           >
-            <Button disabled={!src}>Download</Button>
+            <Button disabled={!src} className="w-full">Download</Button>
           </a>
         </DialogFooter>
       </DialogContent>
