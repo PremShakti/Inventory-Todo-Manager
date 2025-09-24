@@ -40,13 +40,13 @@ export function ImageDialog({ src, children }: { src: string; children: React.Re
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <a
+          {/* <a
             href={src}
             download={`inventory-image-${Date.now()}.jpg`}
             className=" w-full "
           >
             <Button disabled={!src} className="w-full">Download</Button>
-          </a>
+          </a> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

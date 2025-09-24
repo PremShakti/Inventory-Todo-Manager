@@ -284,26 +284,12 @@ function TodoCard({
               </Button>
             </div>
 
-            {todo.image && (
-              <div className="flex justify-end">
-                <ImageDialog src={todo.image}>
-                  <div className="   max-h-[40px] max-w-[40px] md:max-w-[50px] md:max-h-[50px] overflow-hidden  ">
-                    <Image
-                      src={todo.image}
-                      alt="Todo attachment"
-                      className=" rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-                      width={50}
-                      height={50}
-                    />
-                  </div>
-                </ImageDialog>
-              </div>
-            )}
+            
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
+      <CardContent className="pt-0 grid grid-cols-6 gap-2">
+        <div className="space-y-3  col-span-4 ">
           <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
             <MapPin className="w-4 h-4 mr-2" />
             <span className="font-medium">{todo.location}</span>
@@ -320,6 +306,21 @@ function TodoCard({
             Created {format(todo.createdAt, "MMM dd, yyyy 'at' h:mm a")}
           </div>
         </div>
+        {todo.image && (
+              <div className=" col-span-2 w-full">
+                <ImageDialog src={todo.image}>
+                  <div className=" w-full overflow-hidden   h-full ">
+                    <Image
+                      src={todo.image}
+                      alt="Todo attachment"
+                      className=" w-full h-auto  rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                      width={50}
+                      height={50}
+                    />
+                  </div>
+                </ImageDialog>
+              </div>
+            )}
       </CardContent>
     </Card>
   );
