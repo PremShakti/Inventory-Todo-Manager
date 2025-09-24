@@ -26,6 +26,10 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
+import SybHeading from "@/components/SybHeading";
+import AvtarUser from "@/components/AvtarUser";
+import OneTimePopUp from "@/components/OneTimePopUp";
+import Image from "next/image";
 
 export interface Todo {
   id: string;
@@ -47,6 +51,7 @@ export default function TodoApp() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [primeMember, setPrimeMember] = useState(false);
 
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [settings, setSettings] = useState<{
@@ -115,6 +120,14 @@ export default function TodoApp() {
       try {
         const res = await axios.get("/api/auth/me");
         setUserEmail(res.data?.email || null);
+
+        // Check if prime membership is active and not expired
+        const isPrimeMember =
+          res?.data?.primeMembership &&
+          res?.data?.membershipExpiresAt &&
+          new Date(res?.data?.membershipExpiresAt) > new Date();
+console.log("isPrimeMember",  res?.data);
+        setPrimeMember(isPrimeMember || false);
       } catch {
         setUserEmail(null);
       }
@@ -338,43 +351,32 @@ export default function TodoApp() {
 
   return (
     <div className="min-h-screen pb-[150px] bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4  ">
+      <OneTimePopUp hideButton={true} primeMember={primeMember} />
       <div className="max-w-4xl mx-auto md:space-y-6">
-        <div className=" space-y-2 border-b pb-4">
-          <div className="flex justify-between items-center">
-            <h1 className=" text-base md:text-2xl font-bold text-gray-900 dark:text-white">
-              Inventory Manager
-            </h1>
-            <div className="flex gap-2 items-center">
-              {userEmail && (
-                <span
-                  className="text-sm text-gray-700 dark:text-gray-300 mr-2"
-                  title={userEmail}
-                >
-                  {userEmail}
-                </span>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={openSettings}
-                title="Settings"
-                className="hidden md:inline-flex"
-              >
-                <Settings className="w-6 h-6" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLogout}
-                title="Logout"
-              >
-                <LogOut className="w-6 h-6" />
-              </Button>
+        <div className=" space-y-2  pb-4">
+          <div className="flex justify-between items-center   backdrop-blur-[4px]  ">
+            <div className="flex items-center gap-2">
+              <h1 className=" text-base md:text-2xl font-bold text-gray-900 dark:text-white">
+                Inventory Manager
+              </h1>
+              <span>
+                <Image
+                  src={"/titleicon.png"}
+                  alt="Title Icon"
+                  width={40}
+                  height={40}
+                />
+              </span>
             </div>
+
+            <AvtarUser
+              userEmail={userEmail}
+              openSettings={openSettings}
+              handleLogout={handleLogout}
+              primeMember={primeMember}
+            />
           </div>
-          <p className=" text-sm md:text-lg text-gray-600 dark:text-gray-300">
-            Organize and track your inventory tasks efficiently
-          </p>
+          <SybHeading />
         </div>
 
         <div className="flex justify-center gap-2 mb-4">
@@ -422,10 +424,15 @@ export default function TodoApp() {
           </Button>
         </div>
         <div className="gap-2 py-2 px-2 fixed z-20 bottom-1 left-1/2 transform -translate-x-1/2 md:hidden grid grid-cols-3 w-[95vw] rounded-md overflow-hidden backdrop-blur-[4px] bg-white/30">
-          <Button size="icon" variant={"outline"} className=" w-full bg-transparent" onClick={()=>{
-            setIsDialogOpen(true);
-            setEditingTodo(null);
-          }}>
+          <Button
+            size="icon"
+            variant={"outline"}
+            className=" w-full bg-transparent"
+            onClick={() => {
+              setIsDialogOpen(true);
+              setEditingTodo(null);
+            }}
+          >
             <Plus className="h-5 w-5" />
             {/* {editingTodo ? "Edit Task" : "Add New Task"} */}
           </Button>

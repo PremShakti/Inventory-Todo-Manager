@@ -17,7 +17,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "User already exists" }, { status: 400 });
   }
   const hashed = await bcrypt.hash(password, 10);
-  await db.collection("users").insertOne({ email, password: hashed });
+  await db.collection("users").insertOne({ 
+    email, 
+    password: hashed,
+    primeMembership: false,
+    membershipExpiresAt: null,
+    membershipClaimedAt: null,
+    membershipType: null
+  });
   const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "7d" });
   const res = NextResponse.json({ success: true });
   res.cookies.set("token", token, { httpOnly: true, path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 * 7 });
